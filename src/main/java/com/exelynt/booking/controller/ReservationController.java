@@ -28,6 +28,7 @@ public class ReservationController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @Operation(summary = "Create a reservation (User identity automatically extracted from JWT)")
     public ResponseEntity<ReservationResponse> createReservation(
             @Valid @RequestBody ReservationRequest request,
@@ -39,6 +40,7 @@ public class ReservationController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @Operation(summary = "Get paginated reservations with optional filtering by status and price range (USER sees own, ADMIN sees all)")
     public ResponseEntity<PagedResponse<ReservationResponse>> getReservations(
             @RequestParam(required = false) ReservationStatus status,
@@ -62,6 +64,7 @@ public class ReservationController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @Operation(summary = "Get reservation details by ID (USER can view own, ADMIN can view any)")
     public ResponseEntity<ReservationResponse> getReservationById(
             @PathVariable Long id,
@@ -76,6 +79,7 @@ public class ReservationController {
     }
 
     @PutMapping("/{id}/status")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @Operation(summary = "Update reservation status (ADMIN can set any status; USER can cancel own reservation)")
     public ResponseEntity<ReservationResponse> updateReservationStatus(
             @PathVariable Long id,

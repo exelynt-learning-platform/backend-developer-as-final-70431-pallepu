@@ -71,6 +71,8 @@ public class ReservationService {
         return mapToResponse(saved);
     }
 
+    private static final java.util.Set<String> ALLOWED_SORT_FIELDS = java.util.Set.of("id", "createdAt", "startTime", "endTime", "totalPrice", "status");
+
     @Transactional(readOnly = true)
     public PagedResponse<ReservationResponse> getReservations(
             ReservationStatus status,
@@ -90,9 +92,16 @@ public class ReservationService {
             userIdFilter = user.getId();
         }
 
-        String validSortBy = (sortBy != null && !sortBy.isBlank()) ? sortBy : "createdAt";
-        Sort sort = "asc".equalsIgnoreCase(sortDir) ? Sort.by(validSortBy).ascending() : Sort.by(validSortBy).descending();
-        Pageable pageable = PageRequest.of(page, size, sort);
+        String fieldToSort = (sortBy != null && !sortBy.isBlank()) ? sortBy : "createdAt";
+        if (!ALLOWED_SORT_FIELDS.contains(fieldToSort)) {
+            throw new InvalidReservationException("Invalid sortBy parameter: '" + sortBy + "'. Allowed sort fields are: " + ALLOWED_SORT_FIELDS);
+        }
+
+        int validPage = Math.max(0, page);
+        int validSize = Math.max(1, Math.min(size, 100));
+
+        Sort sort = "asc".equalsIgnoreCase(sortDir) ? Sort.by(fieldToSort).ascending() : Sort.by(fieldToSort).descending();
+        Pageable pageable = PageRequest.of(validPage, validSize, sort);
 
         Specification<Reservation> spec = ReservationSpecification.filterReservations(
                 status, minPrice, maxPrice, userIdFilter

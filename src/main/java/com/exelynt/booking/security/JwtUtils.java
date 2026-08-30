@@ -22,12 +22,17 @@ public class JwtUtils {
     private long jwtExpirationMs;
 
     private SecretKey key() {
-        if (jwtSecret == null || jwtSecret.trim().isEmpty()) {
+        if (jwtSecret == null || jwtSecret.trim().isEmpty() || "${JWT_SECRET}".equals(jwtSecret)) {
             throw new IllegalStateException("JWT Secret environment variable (JWT_SECRET) is missing or unconfigured");
         }
-        byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
+        byte[] keyBytes;
+        try {
+            keyBytes = Decoders.BASE64.decode(jwtSecret);
+        } catch (Exception e) {
+            keyBytes = jwtSecret.getBytes();
+        }
         if (keyBytes.length < 32) {
-            throw new IllegalArgumentException("JWT Secret must be Base64 encoded and at least 256 bits (32 bytes) in length");
+            throw new IllegalArgumentException("JWT Secret must be at least 256 bits (32 bytes) in length");
         }
         return Keys.hmacShaKeyFor(keyBytes);
     }

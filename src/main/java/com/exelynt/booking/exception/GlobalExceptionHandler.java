@@ -101,7 +101,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler({InvalidReservationException.class, IllegalArgumentException.class, IllegalStateException.class})
+    @ExceptionHandler({InvalidReservationException.class, IllegalArgumentException.class, IllegalStateException.class, org.springframework.data.mapping.PropertyReferenceException.class})
     public ResponseEntity<ApiErrorResponse> handleBadRequestExceptions(
             RuntimeException ex, HttpServletRequest request) {
 
