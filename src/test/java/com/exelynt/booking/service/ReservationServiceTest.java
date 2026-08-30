@@ -102,7 +102,7 @@ class ReservationServiceTest {
     void createReservation_Success() {
         when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(testUser));
         when(resourceRepository.findById(10L)).thenReturn(Optional.of(testResource));
-        when(reservationRepository.findOverlappingReservations(any(), any(), any(), any(), any()))
+        when(reservationRepository.findOverlappingReservations(any(), any(), any(), any()))
                 .thenReturn(Collections.emptyList());
         when(reservationRepository.save(any(Reservation.class))).thenReturn(testReservation);
 
@@ -132,7 +132,7 @@ class ReservationServiceTest {
     void createReservation_OverlappingBooking() {
         when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(testUser));
         when(resourceRepository.findById(10L)).thenReturn(Optional.of(testResource));
-        when(reservationRepository.findOverlappingReservations(any(), any(), any(), any(), any()))
+        when(reservationRepository.findOverlappingReservations(any(), any(), any(), any()))
                 .thenReturn(List.of(testReservation));
 
         assertThrows(InvalidReservationException.class, () ->

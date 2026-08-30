@@ -176,9 +176,12 @@ public class ReservationService {
 
     private void checkForOverlappingReservations(Long resourceId, LocalDateTime startTime, LocalDateTime endTime, Long reservationId) {
         List<ReservationStatus> activeStatuses = List.of(ReservationStatus.PENDING, ReservationStatus.CONFIRMED);
-        List<Reservation> overlaps = reservationRepository.findOverlappingReservations(
-                resourceId, startTime, endTime, activeStatuses, reservationId
-        );
+        List<Reservation> overlaps;
+        if (reservationId == null) {
+            overlaps = reservationRepository.findOverlappingReservations(resourceId, startTime, endTime, activeStatuses);
+        } else {
+            overlaps = reservationRepository.findOverlappingReservationsExcludingId(resourceId, startTime, endTime, activeStatuses, reservationId);
+        }
 
         if (!overlaps.isEmpty()) {
             throw new InvalidReservationException("The resource is already booked during the selected time period");

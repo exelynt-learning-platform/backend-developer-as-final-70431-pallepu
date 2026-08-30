@@ -20,10 +20,23 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long>,
         SELECT r FROM Reservation r 
         WHERE r.resource.id = :resourceId 
         AND r.status IN (:activeStatuses) 
-        AND (:reservationId IS NULL OR r.id <> :reservationId)
         AND (r.startTime < :endTime AND r.endTime > :startTime)
     """)
     List<Reservation> findOverlappingReservations(
+            @Param("resourceId") Long resourceId,
+            @Param("startTime") LocalDateTime startTime,
+            @Param("endTime") LocalDateTime endTime,
+            @Param("activeStatuses") List<ReservationStatus> activeStatuses
+    );
+
+    @Query("""
+        SELECT r FROM Reservation r 
+        WHERE r.resource.id = :resourceId 
+        AND r.status IN (:activeStatuses) 
+        AND r.id <> :reservationId
+        AND (r.startTime < :endTime AND r.endTime > :startTime)
+    """)
+    List<Reservation> findOverlappingReservationsExcludingId(
             @Param("resourceId") Long resourceId,
             @Param("startTime") LocalDateTime startTime,
             @Param("endTime") LocalDateTime endTime,

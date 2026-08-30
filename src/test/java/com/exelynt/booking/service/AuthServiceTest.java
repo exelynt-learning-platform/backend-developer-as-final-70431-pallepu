@@ -67,7 +67,6 @@ class AuthServiceTest {
                 .email("newuser@example.com")
                 .password("Password@123")
                 .fullName("New User")
-                .role(Role.ROLE_USER)
                 .build();
     }
 
