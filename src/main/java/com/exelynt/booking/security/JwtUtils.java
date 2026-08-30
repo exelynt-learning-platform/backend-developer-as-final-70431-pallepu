@@ -22,6 +22,9 @@ public class JwtUtils {
     private long jwtExpirationMs;
 
     private SecretKey key() {
+        if (jwtSecret == null || jwtSecret.trim().isEmpty()) {
+            throw new IllegalStateException("JWT Secret environment variable (JWT_SECRET) is missing or unconfigured");
+        }
         byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
         if (keyBytes.length < 32) {
             throw new IllegalArgumentException("JWT Secret must be Base64 encoded and at least 256 bits (32 bytes) in length");

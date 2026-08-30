@@ -3,7 +3,9 @@ package com.exelynt.booking.service;
 import com.exelynt.booking.domain.Resource;
 import com.exelynt.booking.dto.ResourceRequest;
 import com.exelynt.booking.dto.ResourceResponse;
+import com.exelynt.booking.exception.InvalidReservationException;
 import com.exelynt.booking.exception.ResourceNotFoundException;
+import com.exelynt.booking.repository.ReservationRepository;
 import com.exelynt.booking.repository.ResourceRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,9 +16,11 @@ import java.util.List;
 public class ResourceService {
 
     private final ResourceRepository resourceRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ResourceService(ResourceRepository resourceRepository) {
+    public ResourceService(ResourceRepository resourceRepository, ReservationRepository reservationRepository) {
         this.resourceRepository = resourceRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     @Transactional
@@ -68,6 +72,9 @@ public class ResourceService {
     public void deleteResource(Long id) {
         if (!resourceRepository.existsById(id)) {
             throw new ResourceNotFoundException("Resource not found with ID: " + id);
+        }
+        if (reservationRepository.existsByResourceId(id)) {
+            throw new InvalidReservationException("Cannot delete resource with existing reservations. Please delete or cancel associated reservations first.");
         }
         resourceRepository.deleteById(id);
     }

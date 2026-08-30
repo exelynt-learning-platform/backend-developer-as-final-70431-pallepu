@@ -90,7 +90,8 @@ public class ReservationService {
             userIdFilter = user.getId();
         }
 
-        Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        String validSortBy = (sortBy != null && !sortBy.isBlank()) ? sortBy : "createdAt";
+        Sort sort = "asc".equalsIgnoreCase(sortDir) ? Sort.by(validSortBy).ascending() : Sort.by(validSortBy).descending();
         Pageable pageable = PageRequest.of(page, size, sort);
 
         Specification<Reservation> spec = ReservationSpecification.filterReservations(
@@ -118,7 +119,9 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Reservation not found with ID: " + id));
 
-        if (!isAdmin && !reservation.getUser().getEmail().equalsIgnoreCase(currentUserEmail)) {
+        boolean isOwner = currentUserEmail != null && currentUserEmail.equalsIgnoreCase(reservation.getUser().getEmail());
+
+        if (!isAdmin && !isOwner) {
             throw new UnauthorizedAccessException("You are not authorized to view this reservation");
         }
 
@@ -135,7 +138,7 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Reservation not found with ID: " + id));
 
-        boolean isOwner = reservation.getUser().getEmail().equalsIgnoreCase(currentUserEmail);
+        boolean isOwner = currentUserEmail != null && currentUserEmail.equalsIgnoreCase(reservation.getUser().getEmail());
 
         if (!isAdmin && !isOwner) {
             throw new UnauthorizedAccessException("You are not authorized to modify this reservation");
