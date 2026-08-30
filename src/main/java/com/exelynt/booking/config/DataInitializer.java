@@ -104,8 +104,8 @@ public class DataInitializer implements CommandLineRunner {
             reservationRepository.save(Reservation.builder()
                     .resource(conferenceRoom)
                     .user(user1)
-                    .startTime(now.plusDays(1).withHour(10).withMinute(0))
-                    .endTime(now.plusDays(1).withHour(12).withMinute(0))
+                    .startTime(now.plusDays(1).toLocalDate().atTime(10, 0))
+                    .endTime(now.plusDays(1).toLocalDate().atTime(12, 0))
                     .status(ReservationStatus.CONFIRMED)
                     .totalPrice(new BigDecimal("150.00"))
                     .build());
@@ -113,8 +113,8 @@ public class DataInitializer implements CommandLineRunner {
             reservationRepository.save(Reservation.builder()
                     .resource(projector)
                     .user(user1)
-                    .startTime(now.plusDays(2).withHour(14).withMinute(0))
-                    .endTime(now.plusDays(2).withHour(17).withMinute(0))
+                    .startTime(now.plusDays(2).toLocalDate().atTime(14, 0))
+                    .endTime(now.plusDays(2).toLocalDate().atTime(17, 0))
                     .status(ReservationStatus.PENDING)
                     .totalPrice(new BigDecimal("75.00"))
                     .build());
@@ -122,8 +122,8 @@ public class DataInitializer implements CommandLineRunner {
             reservationRepository.save(Reservation.builder()
                     .resource(electricCar)
                     .user(user2)
-                    .startTime(now.plusDays(3).withHour(8).withMinute(0))
-                    .endTime(now.plusDays(3).withHour(18).withMinute(0))
+                    .startTime(now.plusDays(3).toLocalDate().atTime(8, 0))
+                    .endTime(now.plusDays(3).toLocalDate().atTime(18, 0))
                     .status(ReservationStatus.CONFIRMED)
                     .totalPrice(new BigDecimal("500.00"))
                     .build());
@@ -131,8 +131,8 @@ public class DataInitializer implements CommandLineRunner {
             reservationRepository.save(Reservation.builder()
                     .resource(hotDesk)
                     .user(user1)
-                    .startTime(now.minusDays(1).withHour(9).withMinute(0))
-                    .endTime(now.minusDays(1).withHour(17).withMinute(0))
+                    .startTime(now.minusDays(1).toLocalDate().atTime(9, 0))
+                    .endTime(now.minusDays(1).toLocalDate().atTime(17, 0))
                     .status(ReservationStatus.CANCELLED)
                     .totalPrice(new BigDecimal("120.00"))
                     .build());

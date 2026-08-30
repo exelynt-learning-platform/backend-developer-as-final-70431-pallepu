@@ -75,6 +75,28 @@ public class ReservationService {
 
     @Transactional(readOnly = true)
     public PagedResponse<ReservationResponse> getReservations(
+            ReservationFilterRequest filterRequest,
+            String currentUserEmail,
+            boolean isAdmin
+    ) {
+        if (filterRequest == null) {
+            filterRequest = new ReservationFilterRequest();
+        }
+        return getReservations(
+                filterRequest.getStatus(),
+                filterRequest.getMinPrice(),
+                filterRequest.getMaxPrice(),
+                filterRequest.getPage(),
+                filterRequest.getSize(),
+                filterRequest.getSortBy(),
+                filterRequest.getSortDir(),
+                currentUserEmail,
+                isAdmin
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public PagedResponse<ReservationResponse> getReservations(
             ReservationStatus status,
             BigDecimal minPrice,
             BigDecimal maxPrice,
