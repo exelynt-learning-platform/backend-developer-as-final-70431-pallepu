@@ -34,7 +34,7 @@ public class ReservationController {
             @Valid @RequestBody ReservationRequest request,
             Authentication authentication) {
         
-        String currentUserEmail = authentication.getName();
+        String currentUserEmail = extractEmail(authentication);
         ReservationResponse response = reservationService.createReservation(request, currentUserEmail);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -52,8 +52,8 @@ public class ReservationController {
             @RequestParam(defaultValue = "desc") String sortDir,
             Authentication authentication) {
 
-        String currentUserEmail = authentication.getName();
-        boolean isAdmin = authentication.getAuthorities().stream()
+        String currentUserEmail = extractEmail(authentication);
+        boolean isAdmin = authentication != null && authentication.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
         PagedResponse<ReservationResponse> response = reservationService.getReservations(
@@ -70,8 +70,8 @@ public class ReservationController {
             @PathVariable Long id,
             Authentication authentication) {
 
-        String currentUserEmail = authentication.getName();
-        boolean isAdmin = authentication.getAuthorities().stream()
+        String currentUserEmail = extractEmail(authentication);
+        boolean isAdmin = authentication != null && authentication.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
         ReservationResponse response = reservationService.getReservationById(id, currentUserEmail, isAdmin);
@@ -86,8 +86,8 @@ public class ReservationController {
             @Valid @RequestBody ReservationStatusUpdateRequest request,
             Authentication authentication) {
 
-        String currentUserEmail = authentication.getName();
-        boolean isAdmin = authentication.getAuthorities().stream()
+        String currentUserEmail = extractEmail(authentication);
+        boolean isAdmin = authentication != null && authentication.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
         ReservationResponse response = reservationService.updateReservationStatus(
@@ -103,5 +103,16 @@ public class ReservationController {
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
         reservationService.deleteReservation(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private String extractEmail(Authentication authentication) {
+        if (authentication == null) {
+            return null;
+        }
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof org.springframework.security.core.userdetails.UserDetails userDetails) {
+            return userDetails.getUsername();
+        }
+        return authentication.getName();
     }
 }
